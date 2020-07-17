@@ -1,5 +1,17 @@
-import React from 'react';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Character from "./components/Character";
+import { Container, Row, Col } from "reactstrap";
+import styled from "styled-components";
+import "./App.css";
+
+const Header = styled.h1`
+  text-align: center;
+  text-shadow: 1px 1px 5px black;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  color: yellow;
+`;
 
 const App = () => {
   // Try to think through what state you'll need for this app before starting. Then build out
@@ -9,10 +21,42 @@ const App = () => {
   // side effect in a component, you want to think about which state and/or props it should
   // sync up with, if any.
 
+  const [chars, setChars] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('https://swapi.py4e.com/api/people/')
+      .then(response => {
+        // console.log(response);
+        setChars(response.data.results)
+      })
+      .catch(error => {
+        console.log('there was an error', error);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <h1 className="Header">Characters</h1>
-    </div>
+    <Container>
+      <Row>
+        <Col>
+          <Header>Star Wars Characters</Header>
+        </Col>
+      </Row>
+      <Row>
+        {chars.map(char => {
+          return <Character
+            name={char.name}
+            birthYear={char.birth_year}
+            height={char.height}
+            mass={char.mass}
+            hairColor={char.hair_color}
+            skinColor={char.skin_color}
+            eyeColor={char.eye_color}
+            gender={char.gender}
+          />;
+        })}
+      </Row>
+    </Container>
   );
 }
 
